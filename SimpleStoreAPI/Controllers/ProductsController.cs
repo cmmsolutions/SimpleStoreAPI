@@ -33,5 +33,17 @@ namespace SimpleStoreAPI.Controllers
             var product = _context.Products.Find(id);
             return Ok(product);
         }
+
+        [HttpPost]
+        public ActionResult<Product> PostProduct([FromBody] Product product)
+        {
+            _context.Products.Add(product);
+            _context.SaveChanges();
+            return CreatedAtAction (
+                "GetProduct",
+                new { id = product.Id },
+                product
+            );
+        }
     }
 }
