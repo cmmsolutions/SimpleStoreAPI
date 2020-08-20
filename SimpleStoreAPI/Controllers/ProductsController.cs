@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SimpleStoreAPI.Models;
 
 namespace SimpleStoreAPI.Controllers
@@ -44,6 +45,34 @@ namespace SimpleStoreAPI.Controllers
                 new { id = product.Id },
                 product
             );
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult PutProduct([FromRoute] int id, [FromBody] Product product)
+        {
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                 _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (_context.Products.Find(id) == null)
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return NoContent();
+
         }
     }
 }
